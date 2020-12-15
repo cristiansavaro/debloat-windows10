@@ -131,3 +131,93 @@ Write-Host "Changing default Explorer view to This PC..."
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
 Write-Host "Hiding 3D Objects icon from This PC..."
 Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+
+$Bloatware = @(
+        "Microsoft.3DBuilder"
+        "Microsoft.AppConnector"
+	    "Microsoft.BingFinance"
+	    "Microsoft.BingNews"
+	    "Microsoft.BingSports"
+	    "Microsoft.BingTranslator"
+	    "Microsoft.BingWeather"
+        "Microsoft.GetHelp"
+        "Microsoft.Getstarted"
+        "Microsoft.Messaging"
+        "Microsoft.Microsoft3DViewer"
+        "Microsoft.MicrosoftSolitaireCollection"
+        "Microsoft.NetworkSpeedTest"
+        "Microsoft.News"
+        "Microsoft.Office.Lens"
+        "Microsoft.Office.Sway"
+        "Microsoft.OneConnect"
+        "Microsoft.People"
+        "Microsoft.Print3D"
+        "Microsoft.SkypeApp"
+        "Microsoft.StorePurchaseApp"
+        "Microsoft.Wallet"
+        "Microsoft.Whiteboard"
+        "Microsoft.WindowsAlarms"
+        "microsoft.windowscommunicationsapps"
+        "Microsoft.WindowsFeedbackHub"
+        "Microsoft.WindowsMaps"
+        "Microsoft.WindowsSoundRecorder"
+        "Microsoft.ZuneMusic"
+        "Microsoft.ZuneVideo"
+
+        "*EclipseManager*"
+        "*ActiproSoftwareLLC*"
+        "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
+        "*Duolingo-LearnLanguagesforFree*"
+        "*PandoraMediaInc*"
+        "*CandyCrush*"
+        "*BubbleWitch3Saga*"
+        "*Wunderlist*"
+        "*Flipboard*"
+        "*Twitter*"
+        "*Facebook*"
+        "*Royal Revolt*"
+        "*Sway*"
+        "*Speed Test*"
+        "*Dolby*"
+        "*Viber*"
+        "*ACGMediaPlayer*"
+        "*Netflix*"
+        "*OneCalendar*"
+        "*LinkedInforWindows*"
+        "*HiddenCityMysteryofShadows*"
+        "*Hulu*"
+        "*HiddenCity*"
+        "*AdobePhotoshopExpress*"
+)
+foreach ($Bloat in $Bloatware) {
+	Get-AppxPackage -Name $Bloat| Remove-AppxPackage
+	Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+	Write-Host "Trying to remove $Bloat."
+}
+
+Write-Host "Installing Windows Media Player..."
+Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+#Stops edge from taking over as the default .PDF viewer    
+Write-Host "Stopping Edge from taking over as the default .PDF viewer"
+$NoPDF = "HKCR:\.pdf"
+$NoProgids = "HKCR:\.pdf\OpenWithProgids"
+$NoWithList = "HKCR:\.pdf\OpenWithList" 
+If (!(Get-ItemProperty $NoPDF  NoOpenWith)) {
+	New-ItemProperty $NoPDF NoOpenWith 
+}        
+If (!(Get-ItemProperty $NoPDF  NoStaticDefaultVerb)) {
+	New-ItemProperty $NoPDF  NoStaticDefaultVerb 
+}        
+If (!(Get-ItemProperty $NoProgids  NoOpenWith)) {
+	New-ItemProperty $NoProgids  NoOpenWith 
+}        
+If (!(Get-ItemProperty $NoProgids  NoStaticDefaultVerb)) {
+	New-ItemProperty $NoProgids  NoStaticDefaultVerb 
+}        
+If (!(Get-ItemProperty $NoWithList  NoOpenWith)) {
+	New-ItemProperty $NoWithList  NoOpenWith
+}        
+If (!(Get-ItemProperty $NoWithList  NoStaticDefaultVerb)) {
+	New-ItemProperty $NoWithList  NoStaticDefaultVerb 
+}
