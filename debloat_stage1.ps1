@@ -1,3 +1,19 @@
+function New-FolderForced {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param (
+		[Parameter(Position = 0, Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[string]
+        $Path
+    )
+
+    process {
+        if (-not (Test-Path $Path)) {
+            Write-Verbose "-- Creating full path to:  $Path"
+            New-Item -Path $Path -ItemType Directory -Force
+        }
+    }
+}
+
 Write-Host "Disabling Telemetry..."
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
@@ -322,7 +338,7 @@ foreach ($key in $cdm) {
 New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" "AutoDownload" 2
 
-# Prevents "Suggested Applications" returning
+Write-Host "Prevent Suggested Applications returning"
 New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" "DisableWindowsConsumerFeatures" 1
 
