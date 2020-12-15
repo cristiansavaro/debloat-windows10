@@ -8,6 +8,13 @@ Disable-ScheduledTask -TaskName "Microsoft\Windows\Autochk\Proxy" | Out-Null
 Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" | Out-Null
 Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" | Out-Null
 Disable-ScheduledTask -TaskName "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null
+Write-Host "Disabling scheduled tasks"
+Get-ScheduledTask  XblGameSaveTaskLogon | Disable-ScheduledTask
+Get-ScheduledTask  XblGameSaveTask | Disable-ScheduledTask
+Get-ScheduledTask  Consolidator | Disable-ScheduledTask
+Get-ScheduledTask  UsbCeip | Disable-ScheduledTask
+Get-ScheduledTask  DmClient | Disable-ScheduledTask
+Get-ScheduledTask  DmClientOnScenarioDownload | Disable-ScheduledTask
 Write-Host "Disabling Application suggestions..."
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 0
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 0
@@ -281,6 +288,43 @@ If (!(Test-Path "HKCR:")) {
 }
 Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+
+Write-Host "Unpinning all tiles from the start menu"
+(New-Object -Com Shell.Application).
+NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').
+Items() |
+	% { $_.Verbs() } |
+	? {$_.Name -match 'Un.*pin from Start'} |
+	% {$_.DoIt()}
+
+Write-Host "Prevent Apps from re-installing"
+$cdm = @(
+    "ContentDeliveryAllowed"
+    "FeatureManagementEnabled"
+    "OemPreInstalledAppsEnabled"
+    "PreInstalledAppsEnabled"
+    "PreInstalledAppsEverEnabled"
+    "SilentInstalledAppsEnabled"
+    "SubscribedContent-314559Enabled"
+    "SubscribedContent-338387Enabled"
+    "SubscribedContent-338388Enabled"
+    "SubscribedContent-338389Enabled"
+    "SubscribedContent-338393Enabled"
+    "SubscribedContentEnabled"
+    "SystemPaneSuggestionsEnabled"
+)
+
+New-FolderForced -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+foreach ($key in $cdm) {
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" $key 0
+}
+
+New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" "AutoDownload" 2
+
+# Prevents "Suggested Applications" returning
+New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" "DisableWindowsConsumerFeatures" 1
 
 Write-Host "Enabling Dark Mode"
 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
