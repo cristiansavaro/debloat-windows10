@@ -321,8 +321,8 @@ foreach ($key in $cdm) {
 Write-Host "Enabling Dark Mode"
 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
 
-Write-Host "Set timezone and add language pack"
+Write-Host "Set timezone / add language pack"
 Set-TimeZone -Name "GTB Standard Time"
 $LanguageList = Get-WinUserLanguageList
 $LanguageList.Add("ro-RO")
-Set-WinUserLanguageList $LanguageList -force
+Set-WinUserLanguageList $LanguageList -Force
