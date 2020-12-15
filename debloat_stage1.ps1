@@ -1,19 +1,3 @@
-function New-FolderForced {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param (
-		[Parameter(Position = 0, Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[string]
-        $Path
-    )
-
-    process {
-        if (-not (Test-Path $Path)) {
-            Write-Verbose "-- Creating full path to:  $Path"
-            New-Item -Path $Path -ItemType Directory -Force
-        }
-    }
-}
-
 Write-Host "Disabling Telemetry..."
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
@@ -330,17 +314,9 @@ $cdm = @(
     "SystemPaneSuggestionsEnabled"
 )
 
-New-FolderForced -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
 foreach ($key in $cdm) {
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" $key 0
 }
-
-New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" "AutoDownload" 2
-
-Write-Host "Prevent Suggested Applications returning"
-New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" "DisableWindowsConsumerFeatures" 1
 
 Write-Host "Enabling Dark Mode"
 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
