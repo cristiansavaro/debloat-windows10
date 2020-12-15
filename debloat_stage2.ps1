@@ -24,6 +24,7 @@ Get-AppxPackage *people* | Remove-AppxPackage
 Get-AppxPackage *phone* | Remove-AppxPackage
 Get-AppxPackage *skypeapp* | Remove-AppxPackage
 Get-AppxPackage *solitaire* | Remove-AppxPackage
+Get-AppxPackage *spotify* | Remove-AppxPackage
 Get-AppxPackage *sway* | Remove-AppxPackage
 Get-AppxPackage *wallet* | Remove-AppxPackage
 Get-AppxPackage *windowsphone* | Remove-AppxPackage
@@ -31,3 +32,5 @@ Get-AppxPackage *xbox* | Remove-AppxPackage
 Get-AppxPackage *zunemusic* | Remove-AppxPackage
 Get-AppxPackage *zune* | Remove-AppxPackage
 Get-AppxPackage *Microsoft.MixedReality.Portal* | Remove-AppxPackage
+Get-AppxPackage *roblox* | Remove-AppxPackage
+Get-AppxPackage *hulu* | Remove-AppxPackage
