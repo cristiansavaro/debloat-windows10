@@ -325,4 +325,4 @@ Write-Host "Set timezone and add language pack"
 Set-TimeZone -Name "GTB Standard Time"
 $LanguageList = Get-WinUserLanguageList
 $LanguageList.Add("ro-RO")
-Set-WinUserLanguageList $LanguageList
+Set-WinUserLanguageList $LanguageList -force
